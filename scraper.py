@@ -4,11 +4,24 @@ from urllib.parse import urlparse
 
 
 def scraper(url, resp):
+    #print("hello")
     links = extract_next_links(url, resp)
+    #for link in links:
+        #print(link)
+        #print(is_valid(link))
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
-    soup = BeautifulSoup(resp.raw_response.content, 'html.parser')
+    #html_page = urllib.urlopen(resp.url)
+    print("URL----------------------------")
+    print(url)
+    soup = BeautifulSoup(resp.raw_response.content, 'lxml')
+    links = []
+
+    for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
+        links.append(link.get('href'))
+
+    #print(links)
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -18,15 +31,17 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    return list()
+    #print(resp.raw_response.content)
+    return links
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
-    # There are already some conditions that return False.
+    # There are already some conditions that return False.   
     try:
-        parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
+            return False
+        if parsed.netloc not in set(["www.stat.uci.edu", "www.ics.uci.edu", "www.cs.uci.edu", "www.informatics.uci.edu"]):
             return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
