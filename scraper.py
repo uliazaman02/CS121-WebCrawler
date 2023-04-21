@@ -5,21 +5,27 @@ from urllib.parse import urlparse
 
 def scraper(url, resp):
     #print("hello")
+    #count = 0
     links = extract_next_links(url, resp)
     #for link in links:
+        #print(is_valid(link))
+        #print(url)
+        #if (is_valid(link)):
+            #count = count + 1
         #print(link)
         #print(is_valid(link))
+    #print("Number of valid links: ", count)
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
     #html_page = urllib.urlopen(resp.url)
     print("URL----------------------------")
     print(url)
-    soup = BeautifulSoup(resp.raw_response.content, 'lxml')
     links = []
-
-    for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
-        links.append(link.get('href'))
+    if resp.raw_response != None:
+        soup = BeautifulSoup(resp.raw_response.content, 'lxml')
+        for link in soup.findAll('a'):
+            links.append(link.get('href'))
 
     #print(links)
     # Implementation required.
@@ -39,10 +45,16 @@ def is_valid(url):
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.   
     try:
+        parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
-        if parsed.netloc not in set(["www.stat.uci.edu", "www.ics.uci.edu", "www.cs.uci.edu", "www.informatics.uci.edu"]):
-            return False
+        valid_domains = parsed.netloc.split('.', 1)
+        if len(valid_domains) >= 2:
+            if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
+                return False
+
+        #return not re.match(
+            #r".*\.(stat.uci.edu|ics.uci.edu|cs.uci.edu|informatics.uci.edu)$", parsed.netloc)
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
