@@ -22,6 +22,7 @@ class Worker(Thread):
     def run(self):
         word_count = {}
         # stops is a set containing english stop words
+        nltk.download('stopwords')
         stops = set(stopwords.words('english'))
         print(' HERE ARE STOP WORDS')
         print(stops)
