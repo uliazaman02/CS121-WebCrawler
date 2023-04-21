@@ -3,11 +3,11 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 
-def scraper(url, resp):
-    links = extract_next_links(url, resp)
+def scraper(url, resp, word_count):
+    links = extract_next_links(url, resp, word_count)
     return [link for link in links if is_valid(link)]
 
-def extract_next_links(url, resp):
+def extract_next_links(url, resp, word_count):
     #html_page = urllib.urlopen(resp.url)
     print(f'---------URL: {url}---------')
     #soup = BeautifulSoup(resp.raw_response.content, 'lxml')
@@ -15,6 +15,13 @@ def extract_next_links(url, resp):
 
     if resp.raw_response != None:
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
+        text = soup.get_text()
+        text = text.strip().split()
+        print()
+        print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
+        print()
+        word_count[len(text)] = url
+        # word_count += len(text)
         for link in soup.findAll('a'):
             links.append(link.get('href'))
 
