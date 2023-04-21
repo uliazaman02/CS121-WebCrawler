@@ -5,6 +5,8 @@ from utils.download import download
 from utils import get_logger
 import scraper
 import time
+import nltk
+from nltk.corpus import stopwords
 
 
 class Worker(Thread):
@@ -19,6 +21,11 @@ class Worker(Thread):
         
     def run(self):
         word_count = {}
+        # stops is a set containing english stop words
+        stops = set(stopwords.words('english'))
+        print(' HERE ARE STOP WORDS')
+        print(stops)
+
         while True:
             tbd_url = self.frontier.get_tbd_url()
             if not tbd_url:
