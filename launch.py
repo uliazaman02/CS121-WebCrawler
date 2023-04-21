@@ -16,7 +16,7 @@ def main(config_file, restart):
 
 
 if __name__ == "__main__":
-    print("in launch file")
+    #print("in launch file")
     parser = ArgumentParser()
     parser.add_argument("--restart", action="store_true", default=True)
     parser.add_argument("--config_file", type=str, default="config.ini")
