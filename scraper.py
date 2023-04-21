@@ -4,24 +4,24 @@ from urllib.parse import urlparse
 
 
 def scraper(url, resp):
-    #print("hello")
     links = extract_next_links(url, resp)
-    #for link in links:
-        #print(link)
-        #print(is_valid(link))
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
     #html_page = urllib.urlopen(resp.url)
-    print("URL----------------------------")
-    print(url)
-    soup = BeautifulSoup(resp.raw_response.content, 'lxml')
+    print(f'---------URL: {url}---------')
+    #soup = BeautifulSoup(resp.raw_response.content, 'lxml')
     links = []
 
-    for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
-        links.append(link.get('href'))
+    if resp.raw_response != None:
+        soup = BeautifulSoup(resp.raw_response.content, 'lxml')
+        for link in soup.findAll('a'):
+            links.append(link.get('href'))
 
-    #print(links)
+    #for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
+        #links.append(link.get('href'))
+
+    print(f'links: {links}')
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -37,7 +37,8 @@ def extract_next_links(url, resp):
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
-    # There are already some conditions that return False.   
+    # There are already some conditions that return False.  
+    parsed = urlparse(url) 
     try:
         if parsed.scheme not in set(["http", "https"]):
             return False
