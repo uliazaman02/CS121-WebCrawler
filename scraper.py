@@ -3,36 +3,16 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 
-<<<<<<< HEAD
 def scraper(url, resp):
-    #print("hello")
-    #count = 0
     links = extract_next_links(url, resp)
-    #for link in links:
-        #print(is_valid(link))
-        #print(url)
-        #if (is_valid(link)):
-            #count = count + 1
-        #print(link)
-        #print(is_valid(link))
-    #print("Number of valid links: ", count)
-=======
+
 def scraper(url, resp, word_count):
     links = extract_next_links(url, resp, word_count)
->>>>>>> b29254594c8ffd23a0da7652453655396a1c4a27
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp, word_count):
-    #html_page = urllib.urlopen(resp.url)
-<<<<<<< HEAD
     print("URL----------------------------")
     print(url)
-    links = []
-    if resp.raw_response != None:
-        soup = BeautifulSoup(resp.raw_response.content, 'lxml')
-=======
-    print(f'---------URL: {url}---------')
-    #soup = BeautifulSoup(resp.raw_response.content, 'lxml')
     links = []
 
     if resp.raw_response != None:
@@ -44,14 +24,13 @@ def extract_next_links(url, resp, word_count):
         print()
         word_count[len(text)] = url
         # word_count += len(text)
->>>>>>> b29254594c8ffd23a0da7652453655396a1c4a27
         for link in soup.findAll('a'):
             links.append(link.get('href'))
 
     #for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
         #links.append(link.get('href'))
 
-    print(f'links: {links}')
+    # print(f'links: {links}')
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
