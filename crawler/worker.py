@@ -1,6 +1,7 @@
 from threading import Thread
 
 from inspect import getsource
+from collections import defaultdict
 from utils.download import download
 from utils import get_logger
 import scraper
@@ -21,6 +22,8 @@ class Worker(Thread):
         
     def run(self):
         word_count = {}
+        word_frequency = defaultdict(int)
+        
         # nltk has a set of stopwords that can be imported
         nltk.download('stopwords')
         # stops is a set containing english stop words

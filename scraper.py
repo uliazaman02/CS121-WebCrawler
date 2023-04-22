@@ -17,6 +17,8 @@ def extract_next_links(url, resp, word_count):
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
         text = soup.get_text()
         text = text.strip().split()
+        print("THIS IS TEXT")
+        print(text)
         print()
         print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
         print()
