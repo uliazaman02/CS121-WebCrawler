@@ -18,6 +18,8 @@ class Worker(Thread):
         super().__init__(daemon=True)
         
     def run(self):
+        word_count = {}
+        unique_pages = 0
         while True:
             tbd_url = self.frontier.get_tbd_url()
             if not tbd_url:
@@ -27,8 +29,14 @@ class Worker(Thread):
             self.logger.info(
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")
-            scraped_urls = scraper.scraper(tbd_url, resp)
+            scraped_urls = scraper.scraper(tbd_url, resp, word_count, unique_pages)
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
+        
+        longest_page_length = max(word_count.keys())
+        longest_page = word_count[longest_page_length]
+        print(f'Longest Page: {longest_page}')
+        print(f'Longest Page Length: {longest_page_length}')
+        print(f'Num unique pages: {unique_pages}')
