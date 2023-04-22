@@ -1,14 +1,13 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from crawler.worker import stops, word_frequency
 
 
-def scraper(url, resp, word_count):
-    links = extract_next_links(url, resp, word_count)
+def scraper(url, resp, word_count, word_frequency, stops):
+    links = extract_next_links(url, resp, word_count, word_frequency, stops)
     return [link for link in links if is_valid(link)]
 
-def extract_next_links(url, resp, word_count):
+def extract_next_links(url, resp, word_count, word_frequency, stops):
     #html_page = urllib.urlopen(resp.url)
     print(f'---------URL: {url}---------')
     #soup = BeautifulSoup(resp.raw_response.content, 'lxml')
@@ -19,8 +18,8 @@ def extract_next_links(url, resp, word_count):
         text = soup.get_text()
         text = text.strip().split()
         
-        print("THIS IS TEXT")
-        print(text)
+        # print("THIS IS TEXT")
+        # print(text)
         for word in text:
             if word not in stops:
                 word_frequency[word] += 1
