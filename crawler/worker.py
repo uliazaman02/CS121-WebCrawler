@@ -61,3 +61,6 @@ class Worker(Thread):
         longest_page = word_count[longest_page_length]
         print(f'Longest Page: {longest_page}')
         print(f'Longest Page Length: {longest_page_length}')
+        
+        sort_by_frequency = sorted(word_frequency.items(), key=lambda x: x[1], reversed=True)
+        print(sort_by_frequency)

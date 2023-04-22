@@ -1,6 +1,7 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from crawler.worker import stops, word_frequency
 
 
 def scraper(url, resp, word_count):
@@ -17,8 +18,13 @@ def extract_next_links(url, resp, word_count):
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
         text = soup.get_text()
         text = text.strip().split()
+        
         print("THIS IS TEXT")
         print(text)
+        for word in text:
+            if word not in stops:
+                word_frequency[word] += 1
+                
         print()
         print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
         print()
