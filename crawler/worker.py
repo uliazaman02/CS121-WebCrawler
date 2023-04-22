@@ -21,25 +21,23 @@ class Worker(Thread):
         
     def run(self):
         word_count = {}
-        # stops is a set containing english stop words
+        # nltk has a set of stopwords that can be imported
         nltk.download('stopwords')
+        # stops is a set containing english stop words
         stops = set(stopwords.words('english'))
+        # remove words from nltk stopwords set that aren't included in the rank.nl stopwords list
         remove_from_nltk = {"ma", "mustn", "haven", "shouldn", "can", "mightn", "aren", "doesn",
                             "weren", "hasn", "needn't",	"ain", "o",	"needn", "s", "ll", "that'll",
                             "don", "m", "will",	"didn",	"wasn",	"re",	"isn", "ve", "should've",
                             "y", "wouldn", "mightn't", "just", "hadn", "shan", "couldn", "d", "won",
                             "t", "now"}
         stops = stops-remove_from_nltk
+        # add missing words from rank.nl to nltk stopwords set
         add_to_nltk = {"they're", "i'd", "how's", 'ought', "he'd", "can't", "when's", "he'll", "he's", 
                        'cannot', "we've", "i'll", "she'd", "where's", "they'd", "here's", "they'll", 
                        "why's", 'would', "i've", 'could', "who's", "there's", "we're", "that's", "let's", 
                        "we'd", "i'm", "she'll", "we'll", "they've", "what's"}
         stops = stops.union(add_to_nltk)
-        print(len(stops))
-        print(' HERE ARE STOP WORDS')
-        # given list has 174 stopwords
-        print(len(stops))
-        print(stops)
 
         while True:
             tbd_url = self.frontier.get_tbd_url()
