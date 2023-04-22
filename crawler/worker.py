@@ -63,4 +63,7 @@ class Worker(Thread):
         print(f'Longest Page Length: {longest_page_length}')
         
         sort_by_frequency = sorted(word_frequency.items(), key=lambda x: x[1], reversed=True)
-        print(sort_by_frequency)
+        # print(sort_by_frequency)
+        most_common_words = [key for key in sort_by_frequency.keys()[:51]]
+        print("MOST COMMON WORDS:")
+        print(most_common_words)
