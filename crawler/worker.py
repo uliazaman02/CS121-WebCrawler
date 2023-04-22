@@ -24,7 +24,21 @@ class Worker(Thread):
         # stops is a set containing english stop words
         nltk.download('stopwords')
         stops = set(stopwords.words('english'))
+        remove_from_nltk = {"ma", "mustn", "haven", "shouldn", "can", "mightn", "aren", "doesn",
+                            "weren", "hasn", "needn't",	"ain", "o",	"needn", "s", "ll", "that'll",
+                            "don", "m", "will",	"didn",	"wasn",	"re",	"isn", "ve", "should've",
+                            "y", "wouldn", "mightn't", "just", "hadn", "shan", "couldn", "d", "won",
+                            "t", "now"}
+        stopwords = stops-remove_from_nltk
+        add_to_nltk = {"they're", "i'd", "how's", 'ought', "he'd", "can't", "when's", "he'll", "he's", 
+                       'cannot', "we've", "i'll", "she'd", "where's", "they'd", "here's", "they'll", 
+                       "why's", 'would', "i've", 'could', "who's", "there's", "we're", "that's", "let's", 
+                       "we'd", "i'm", "she'll", "we'll", "they've", "what's"}
+        stopwords = stopwords.union(add_to_nltk)
+        print(len(stopwords))
         print(' HERE ARE STOP WORDS')
+        # given list has 174 stopwords
+        print(len(stops))
         print(stops)
 
         while True:
