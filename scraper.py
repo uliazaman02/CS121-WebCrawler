@@ -3,22 +3,27 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 
-def scraper(url, resp):
-    links = extract_next_links(url, resp)
-
-def scraper(url, resp, word_count):
-    links = extract_next_links(url, resp, word_count)
+def scraper(url, resp, word_count, word_frequency, stops):
+    links = extract_next_links(url, resp, word_count, word_frequency, stops)
     return [link for link in links if is_valid(link)]
 
-def extract_next_links(url, resp, word_count):
-    print("URL----------------------------")
-    print(url)
+def extract_next_links(url, resp, word_count, word_frequency, stops):
+    #html_page = urllib.urlopen(resp.url)
+    print(f'---------URL: {url}---------')
+    #soup = BeautifulSoup(resp.raw_response.content, 'lxml')
     links = []
 
     if resp.raw_response != None:
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
         text = soup.get_text()
         text = text.strip().split()
+        
+        # print("THIS IS TEXT")
+        # print(text)
+        for word in text:
+            if word not in stops:
+                word_frequency[word] += 1
+                
         print()
         print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
         print()
