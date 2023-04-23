@@ -7,6 +7,7 @@ def scraper(url, resp, word_count, word_frequency, stops):
     links = extract_next_links(url, resp, word_count, word_frequency, stops)
     return [link for link in links if is_valid(link)]
 
+
 def extract_next_links(url, resp, word_count, word_frequency, stops):
     #html_page = urllib.urlopen(resp.url)
     print(f'---------URL: {url}---------')
@@ -70,6 +71,19 @@ def is_valid(url):
             if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
                 return False
 
+        # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # check if webpage content is too similar
+
+        fingerprintA = 0 # prev page?
+        fingerprintB = 0 # this page
+        similarityAB = 0 # algo here (he hasn't published the slides yet lol)
+        # TODO: decide threshold
+        threshold = 1
+        if similarityAB >= threshold:
+            return False
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
         #return not re.match(
             #r".*\.(stat.uci.edu|ics.uci.edu|cs.uci.edu|informatics.uci.edu)$", parsed.netloc)
         return not re.match(
