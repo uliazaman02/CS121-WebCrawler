@@ -7,6 +7,8 @@ from queue import Queue, Empty
 from utils import get_logger, get_urlhash, normalize
 from scraper import is_valid
 
+from urllib.parse import urljoin
+
 class Frontier(object):
     def __init__(self, config, restart):
         self.logger = get_logger("FRONTIER")
@@ -56,6 +58,11 @@ class Frontier(object):
 
     def add_url(self, url):
         url = normalize(url)
+
+        # convert relative URL into absolute URL
+        source_url = "https://www.ics.uci.edu"
+        url = urljoin(source_url, url)
+
         urlhash = get_urlhash(url)
         if urlhash not in self.save:
             self.save[urlhash] = (url, False)
