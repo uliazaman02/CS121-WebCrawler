@@ -57,8 +57,11 @@ class Worker(Thread):
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
         
+        # find the largest int length in the word_count dict
         longest_page_length = max(word_count.keys())
+        # find the url that corresponds with the largest length
         longest_page = word_count[longest_page_length]
+        # print out results
         print(f'Longest Page: {longest_page}')
         print(f'Longest Page Length: {longest_page_length}')
         

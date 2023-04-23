@@ -7,6 +7,7 @@ def scraper(url, resp, word_count, word_frequency, stops):
     links = extract_next_links(url, resp, word_count, word_frequency, stops)
     return [link for link in links if is_valid(link)]
 
+
 def extract_next_links(url, resp, word_count, word_frequency, stops):
     #html_page = urllib.urlopen(resp.url)
     print(f'---------URL: {url}---------')
@@ -15,20 +16,28 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
 
     if resp.raw_response != None:
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
+        # get the text on the webpage
         text = soup.get_text()
+        # get list of text
         text = text.strip().split()
+        # count total (non-stop) words
+        count = 0
         
         # print("THIS IS TEXT")
         # print(text)
         for word in text:
             if word not in stops:
                 word_frequency[word] += 1
+                # count word for word_count dict/finding longest page
+                count += 1
                 
         print()
         print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
         print()
-        word_count[len(text)] = url
-        # word_count += len(text)
+        
+        # add page stats to word_count dict
+        word_count[count] = url
+
         for link in soup.findAll('a'):
             links.append(link.get('href'))
 
@@ -62,6 +71,19 @@ def is_valid(url):
             if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
                 return False
 
+        # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # check if webpage content is too similar
+
+        fingerprintA = 0 # prev page?
+        fingerprintB = 0 # this page
+        similarityAB = 0 # algo here (he hasn't published the slides yet lol)
+        # TODO: decide threshold
+        threshold = 1
+        if similarityAB >= threshold:
+            return False
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
         #return not re.match(
             #r".*\.(stat.uci.edu|ics.uci.edu|cs.uci.edu|informatics.uci.edu)$", parsed.netloc)
         return not re.match(
