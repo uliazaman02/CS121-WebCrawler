@@ -15,20 +15,28 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
 
     if resp.raw_response != None:
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
+        # get the text on the webpage
         text = soup.get_text()
+        # get list of text
         text = text.strip().split()
+        # count total (non-stop) words
+        count = 0
         
         # print("THIS IS TEXT")
         # print(text)
         for word in text:
             if word not in stops:
                 word_frequency[word] += 1
+                # count word for word_count dict/finding longest page
+                count += 1
                 
         print()
         print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
         print()
-        word_count[len(text)] = url
-        # word_count += len(text)
+        
+        # add page stats to word_count dict
+        word_count[count] = url
+
         for link in soup.findAll('a'):
             links.append(link.get('href'))
 
