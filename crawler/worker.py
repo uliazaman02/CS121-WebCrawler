@@ -19,7 +19,7 @@ class Worker(Thread):
         
     def run(self):
         word_count = {}
-        unique_pages = 0
+        unique_pages = []
         while True:
             tbd_url = self.frontier.get_tbd_url()
             if not tbd_url:
@@ -39,4 +39,4 @@ class Worker(Thread):
         longest_page = word_count[longest_page_length]
         print(f'Longest Page: {longest_page}')
         print(f'Longest Page Length: {longest_page_length}')
-        print(f'Num unique pages: {unique_pages}')
+        print(f'Num unique pages: {len(unique_pages)}')

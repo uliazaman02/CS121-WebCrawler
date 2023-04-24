@@ -4,24 +4,31 @@ from urllib.parse import urlparse
 
 def scraper(url, resp, word_count, unique_pages):
     links = extract_next_links(url, resp, word_count)
-    unique_pages += count_unique_pages(links, unique_pages)
-    print("/////////////unique_pages: ", unique_pages)
-    return [link for link in links if is_valid(link)]
+    valid = [link for link in links if is_valid(link)]
+    print("VVAAALLLIIDDD: ", len(valid))
+    unique_pages += count_unique_pages(valid, unique_pages)
+    print("/////////////unique_pages: ", len(unique_pages))
+    return valid
 
 def count_unique_pages(links, unique_pages):
-    unique = []
+    # unique = []
     if len(links) != 0:
         for l,link in enumerate(links):
             if link == None:
                 break
-            link = link.split("#")
-            # parsed = urlparse(url)
-            # link = parsed.fragment
-            if link[0] not in unique:
-                unique.append(link[0])
+            # link = link.split("#")
+            parsed = urlparse(link)
+            page = parsed.fragment
+            print("LINKKKKKKK: :::: ", page)
+            if page == '':
+                # print("NNNNONEEE")
+                unique_pages.append(link)
+            else:
+                if page not in unique_pages:
+                    unique_pages.append(page)
         # unique_pages += len(unique)
-        # print("/////////////unique_pages: ", unique_pages)
-    return len(unique)
+        # print("/////////////unique_pages: ", len(unique_pages))
+    return unique_pages
 
 
 def extract_next_links(url, resp, word_count):
