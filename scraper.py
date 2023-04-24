@@ -9,9 +9,7 @@ def scraper(url, resp, word_count, word_frequency, stops):
 
 
 def extract_next_links(url, resp, word_count, word_frequency, stops):
-    #html_page = urllib.urlopen(resp.url)
     print(f'---------URL: {url}---------')
-    #soup = BeautifulSoup(resp.raw_response.content, 'lxml')
     links = []
 
     if resp.raw_response != None:
@@ -40,9 +38,6 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
 
         for link in soup.findAll('a'):
             links.append(link.get('href'))
-
-    #for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
-        #links.append(link.get('href'))
 
     # print(f'links: {links}')
     # Implementation required.
@@ -84,13 +79,12 @@ def is_valid(url):
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
-        #return not re.match(
-            #r".*\.(stat.uci.edu|ics.uci.edu|cs.uci.edu|informatics.uci.edu)$", parsed.netloc)
+
         return not re.match(
-            r".*\.(css|js|bmp|gif|jpe?g|ico"
+            r".*\.(css|js|bmp|gif|jpe?g|jpeg|jpg|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
-            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+            + r"|ps|eps|tex|ppt|pptx|ppsx|ps|doc|docx|xls|xlsx|names"
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
