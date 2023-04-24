@@ -15,6 +15,8 @@ def count_unique_pages(links, unique_pages):
             if link == None:
                 break
             link = link.split("#")
+            # parsed = urlparse(url)
+            # link = parsed.fragment
             if link[0] not in unique:
                 unique.append(link[0])
         # unique_pages += len(unique)
