@@ -1,6 +1,7 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+import requests
 
 
 def scraper(url, resp, word_count, word_frequency, stops):
@@ -68,9 +69,11 @@ def is_valid(url):
             if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
                 return False
 
+        # detect large files
+        res = requests.head(url)
+
         # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # check if webpage content is too similar
-
         fingerprintA = 0 # prev page?
         fingerprintB = 0 # this page
         similarityAB = 0 # algo here (he hasn't published the slides yet lol)
@@ -78,7 +81,6 @@ def is_valid(url):
         threshold = 1
         if similarityAB >= threshold:
             return False
-
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         # checks for invalid file types in the url
