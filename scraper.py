@@ -12,7 +12,8 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     print(f'---------URL: {url}---------')
     links = []
 
-    if resp.raw_response != None:
+    # checks if page has 200 status code (OK) and there is content, so we can crawl the page
+    if resp.status == 200 and resp.raw_response != None:
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
         # get the text on the webpage
         text = soup.get_text()
@@ -36,10 +37,10 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         # add page stats to word_count dict
         word_count[count] = url
 
+        # uses beatiful soup to extract the urls and put them in a list
         for link in soup.findAll('a'):
             links.append(link.get('href'))
 
-    # print(f'links: {links}')
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -49,19 +50,20 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    #print(resp.raw_response.content)
     return links
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.  
-    parsed = urlparse(url) 
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
+        #split the netloc to only get the domain
         valid_domains = parsed.netloc.split('.', 1)
+
+        # checks if the url is from one of the four domains
         if len(valid_domains) >= 2:
             if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
                 return False
@@ -79,7 +81,7 @@ def is_valid(url):
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
-
+        # checks for invalid file types in the url
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|jpeg|jpg|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
