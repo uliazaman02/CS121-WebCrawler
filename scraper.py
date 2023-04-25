@@ -1,7 +1,13 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from simhash import Simhash, SimhashIndex
 
+
+def simhash_info(text, n):
+    text = text.lower()
+    text = re.sub(r'[^\w]+', '', text)
+    return [text[i:i + n] for i in range(max(len(text) - n + 1, 1))]
 
 def scraper(url, resp, word_count, word_frequency, stops):
     links = extract_next_links(url, resp, word_count, word_frequency, stops)
@@ -82,17 +88,19 @@ def is_valid(url):
 
 
         # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # check if webpage content is too similar
-        n = 0 # decide n-bit size
-        simHashA = 0 # prev page?
-        simHashB = 0 # this page
-        similarityAB = 0 # algo here (he hasn't published the slides yet lol)
 
+        # check if webpage content is too similar
+         # TODO: decide n-bit size
+        n = 0
+        simHashA = # Simhash(simhash_info(?, n))) # prev page?
+        simHashB = # Simhash(simhash_info(?, n)))  # this page text content
+        similarityAB = SimhashIndex([simHashA, simHashB], k=n) # algo here (he hasn't published the slides yet lol)
 
         # TODO: decide threshold
         threshold = 1
         if similarityAB >= threshold:
             return False
+            
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         # checks for invalid file types in the url
