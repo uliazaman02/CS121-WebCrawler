@@ -13,7 +13,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     #soup = BeautifulSoup(resp.raw_response.content, 'lxml')
     links = []
 
-    if resp.raw_response != None:
+    if (200 <= resp.status < 300) and (resp.raw_response != None):
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
         text = soup.get_text()
         text = text.strip().split()
@@ -32,8 +32,10 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         for link in soup.findAll('a'):
             links.append(link.get('href'))
         
+        print("THIS IS THE RESP")
+        print(resp)
         # status code 3xx means redirect, find new URL
-        if 300 <= resp.status_code < 400:
+        if 300 <= resp.status < 400:
             print("where to find new url? where is the location header")
 
     #for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
