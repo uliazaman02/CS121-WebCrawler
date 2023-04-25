@@ -34,7 +34,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
             links.append(link.get('href'))
         
         print("THIS IS THE RESP")
-        print(resp)
+        print(resp.__dir__)
         # status code 3xx means redirect, find new URL
         if 300 <= resp.status < 400:
             print("where to find new url? where is the location header")
