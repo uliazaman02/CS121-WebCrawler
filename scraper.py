@@ -21,6 +21,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         # print("THIS IS TEXT")
         # print(text)
         for word in text:
+            word = word.lower()
             if word not in stops:
                 word_frequency[word] += 1
                 
