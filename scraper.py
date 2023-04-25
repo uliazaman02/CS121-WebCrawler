@@ -1,7 +1,6 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-import requests
 
 
 def scraper(url, resp, word_count, word_frequency, stops):
@@ -22,9 +21,21 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         text = text.strip().split()
         # count total (non-stop) words
         count = 0
+
+        # detect and avoid large files
+        '''
+        p = re.compile(r'^(\d+) bytes$')
+        el = soup.findAll()
+        # print(f'el: {el}')
+        file_size = len(el)
+        print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~file size: {file_size}')
+        # threshold of what is too large to bother crawling:
+        too_large = 15000000
+        if file_size > too_large:
+            print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TOO LARGE: {url}')
+            return
+        '''
         
-        # print("THIS IS TEXT")
-        # print(text)
         for word in text:
             if word not in stops:
                 word_frequency[word] += 1
@@ -34,7 +45,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         print()
         print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
         print()
-        
+
         # add page stats to word_count dict
         word_count[count] = url
 
@@ -69,14 +80,15 @@ def is_valid(url):
             if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
                 return False
 
-        # detect large files
-        res = requests.head(url)
 
         # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # check if webpage content is too similar
-        fingerprintA = 0 # prev page?
-        fingerprintB = 0 # this page
+        n = 0 # decide n-bit size
+        simHashA = 0 # prev page?
+        simHashB = 0 # this page
         similarityAB = 0 # algo here (he hasn't published the slides yet lol)
+
+
         # TODO: decide threshold
         threshold = 1
         if similarityAB >= threshold:
