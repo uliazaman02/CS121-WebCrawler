@@ -7,11 +7,14 @@ from queue import Queue, Empty
 from utils import get_logger, get_urlhash, normalize
 from scraper import is_valid
 
+from urllib.parse import urljoin
+
 class Frontier(object):
     def __init__(self, config, restart):
         self.logger = get_logger("FRONTIER")
         self.config = config
         self.to_be_downloaded = list()
+        self.url_count = 0
         
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.
@@ -55,6 +58,11 @@ class Frontier(object):
 
     def add_url(self, url):
         url = normalize(url)
+
+        # convert relative URL into absolute URL
+        source_url = "https://www.ics.uci.edu"
+        url = urljoin(source_url, url)
+
         urlhash = get_urlhash(url)
         if urlhash not in self.save:
             self.save[urlhash] = (url, False)

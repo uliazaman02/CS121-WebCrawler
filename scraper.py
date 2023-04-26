@@ -1,57 +1,112 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from difflib import SequenceMatcher
 
-def scraper(url, resp, word_count, unique_pages):
-    links = extract_next_links(url, resp, word_count)
-    valid = [link for link in links if is_valid(link)]
-    print("VVAAALLLIIDDD: ", len(valid))
-    unique_pages += count_unique_pages(valid, unique_pages)
-    print("/////////////unique_pages: ", len(unique_pages))
-    return valid
+prev_page_text = ''
+prev_url = ''
+
+
+def scraper(url, resp, word_count, word_frequency, stops, unique_pages):
+    links = extract_next_links(url, resp, word_count, word_frequency, stops)
+    new = count_unique_pages(valid, unique_pages)
+    old = len(unique_pages)
+    unique_pages += new
+    print("////unique_pages count: ", len(new)+old)
+    return [link for link in links if is_valid(link)]
 
 def count_unique_pages(links, unique_pages):
-    # unique = []
     if len(links) != 0:
         for l,link in enumerate(links):
             if link == None:
                 break
-            # link = link.split("#")
+            l = link.split("#")
             parsed = urlparse(link)
             page = parsed.fragment
-            print("LINKKKKKKK: :::: ", page)
             if page == '':
-                # print("NNNNONEEE")
                 unique_pages.append(link)
             else:
-                if page not in unique_pages:
-                    unique_pages.append(page)
-        # unique_pages += len(unique)
-        # print("/////////////unique_pages: ", len(unique_pages))
+                if l[0] not in unique_pages:
+                    unique_pages.append(l[0])
     return unique_pages
 
-
-def extract_next_links(url, resp, word_count):
-    print("URL----------------------------")
-    print(url)
+def extract_next_links(url, resp, word_count, word_frequency, stops):
+    print(f'---------URL: {url}---------')
     links = []
 
-    if resp.raw_response != None:
+    # checks if page has 200 status code (OK) and there is content, so we can crawl the page
+    if resp.status == 200 and resp.raw_response != None:
+
+        # detect and avoid large files ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # get raw response from webpage
+        raw_response = resp.raw_response
+        # get the total file size
+        file_size = len(raw_response.content)
+        print
+        print(f'url: {url}')
+        print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~file size: {file_size} bytes')
+        # threshold of what is too large to bother crawling:
+        # threshold: 50 MB
+        too_large = 50000000
+        # if larger than a certain threshold, avoid crawling
+        if file_size > too_large:
+            print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TOO LARGE: {url}')
+            return []
+
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
+        # get the text on the webpage
         text = soup.get_text()
-        text = text.strip().split()
+        # get list of text
+        text_list = text.strip().split()
+        # count total (non-stop) words
+        count = 0
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        global prev_page_text
+        global prev_url
+        # if this isn't the first page being checked
+        if len(prev_page_text) > 0:
+            # check if webpage content is too similar to that of previous webpage
+            sm = SequenceMatcher(a=text, b=prev_page_text)
+            similarityAB = sm.ratio()
+        
+            threshold = 0.95
+            # if the pages are more than 90% similar
+            if similarityAB >= threshold:
+                # TODO: something else here????? or does just leaving the function work?
+                print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DUPLICATE DETECTED!!!!!')
+                print()
+                print(f'prev: {prev_url}')
+                print(f'current: {url}')
+                print()
+                return []
+            
+        # this is the new prev_page_text
+        prev_page_text = text
+        # this is the new prev_url
+        prev_url = url
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
+        for word in text_list:
+            if word not in stops:
+                word_frequency[word] += 1
+                # count word for word_count dict/finding longest page
+                count += 1
+                
         print()
-        print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
+        print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text_list)}')
         print()
-        word_count[len(text)] = url
-        # word_count += len(text)
+
+        # add page stats to word_count dict
+        word_count[count] = url
+
+        # uses beatiful soup to extract the urls and put them in a list
         for link in soup.findAll('a'):
             links.append(link.get('href'))
 
-    #for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
-        #links.append(link.get('href'))
-
-    # print(f'links: {links}')
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -61,30 +116,30 @@ def extract_next_links(url, resp, word_count):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    #print(resp.raw_response.content)
     return links
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
     # If you decide to crawl it, return True; otherwise return False.
     # There are already some conditions that return False.  
-    parsed = urlparse(url) 
     try:
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
+        #split the netloc to only get the domain
         valid_domains = parsed.netloc.split('.', 1)
+
+        # checks if the url is from one of the four domains
         if len(valid_domains) >= 2:
             if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
                 return False
-
-        #return not re.match(
-            #r".*\.(stat.uci.edu|ics.uci.edu|cs.uci.edu|informatics.uci.edu)$", parsed.netloc)
+        
+        # checks for invalid file types in the url
         return not re.match(
-            r".*\.(css|js|bmp|gif|jpe?g|ico"
+            r".*\.(css|js|bmp|gif|jpe?g|jpeg|jpg|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
-            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+            + r"|ps|eps|tex|ppt|pptx|ppsx|ps|doc|docx|xls|xlsx|names"
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
