@@ -18,6 +18,19 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
 
     # checks if page has 200 status code (OK) and there is content, so we can crawl the page
     if resp.status == 200 and resp.raw_response != None:
+
+        # detect and avoid large files
+        raw_response = resp.raw_response #.headers.get("Content-Length")
+        file_size = len(raw_response.content)
+        print
+        print(f'url: {url}')
+        print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~file size: {file_size}')
+        # threshold of what is too large to bother crawling:
+        too_large = 15000000
+        if file_size > too_large:
+            print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TOO LARGE: {url}')
+            return []
+
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
         # get the text on the webpage
         text = soup.get_text()
@@ -52,20 +65,6 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         # this is the new prev_url
         prev_url = url
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-        # detect and avoid large files
-        '''
-        p = re.compile(r'^(\d+) bytes$')
-        el = soup.findAll()
-        # print(f'el: {el}')
-        file_size = len(el)
-        print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~file size: {file_size}')
-        # threshold of what is too large to bother crawling:
-        too_large = 15000000
-        if file_size > too_large:
-            print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TOO LARGE: {url}')
-            return
-        '''
         
         for word in text_list:
             if word not in stops:
