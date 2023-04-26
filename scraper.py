@@ -72,12 +72,14 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
             word = word.lower()
             alphabetical_regex = re.compile("[a-zA-Z]+")
             valid_words = re.findall(alphabetical_regex, word)
-            print("++++++++VALID WORDS")
-            print(valid_words)
-            if word not in stops:
-                word_frequency[word] += 1
-                # count word for word_count dict/finding longest page
-                count += 1
+            # print("++++++++VALID WORDS")
+            # print(valid_words)
+            for word in valid_words:
+                if word not in stops:
+                    print("add " + word + " to freq dict")
+                    word_frequency[word] += 1
+                    # count word for word_count dict/finding longest page
+                    count += 1
                 
         print()
         print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text_list)}')
