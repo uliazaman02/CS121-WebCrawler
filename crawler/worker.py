@@ -58,17 +58,22 @@ class Worker(Thread):
 
             # time delay/politeness:
             time.sleep(self.config.time_delay)
-        
+            
+        print()
+        print("=========================== CRAWL REPORT ===========================")
+        print("    UNIQUE PAGES:")
         # find the largest int length in the word_count dict
         longest_page_length = max(word_count.keys())
         # find the url that corresponds with the largest length
         longest_page = word_count[longest_page_length]
         # print out results
-        print(f'Longest Page: {longest_page}')
-        print(f'Longest Page Length: {longest_page_length}')
+        print(f'    LONGEST PAGE: {longest_page}')
+        print(f'    LONGEST PAGE LENGTH: {longest_page_length}')
         
         sort_by_frequency = sorted(word_frequency.items(), key=lambda x: x[1], reverse=True)
         # print(sort_by_frequency)
         most_common_words = [entry[0] for entry in sort_by_frequency[:51]]
-        print("MOST COMMON WORDS:")
+        print("    MOST COMMON WORDS:")
         print(most_common_words)
+        print("    SUBDOMAINS:")
+        print("======================== END OF CRAWL REPORT ========================")
