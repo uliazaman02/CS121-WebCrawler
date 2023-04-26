@@ -26,9 +26,10 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         file_size = len(raw_response.content)
         print
         print(f'url: {url}')
-        print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~file size: {file_size}')
+        print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~file size: {file_size} bytes')
         # threshold of what is too large to bother crawling:
-        too_large = 15000000
+        # threshold: 50 MB
+        too_large = 50000000
         # if larger than a certain threshold, avoid crawling
         if file_size > too_large:
             print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TOO LARGE: {url}')
