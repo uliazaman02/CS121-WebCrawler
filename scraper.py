@@ -20,13 +20,18 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     if resp.status == 200 and resp.raw_response != None:
 
         # detect and avoid large files
-        raw_response = resp.raw_response #.headers.get("Content-Length")
-        file_size = len(raw_response.content)
+        # get raw response from webpage
+        raw_response = resp.raw_response
+        # get header from webpage
+        header = resp.raw_response.headers
+        # get the total file size
+        file_size = len(raw_response.content)  + len(header)
         print
         print(f'url: {url}')
         print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~file size: {file_size}')
         # threshold of what is too large to bother crawling:
         too_large = 15000000
+        # if larger than a certain threshold, avoid crawling
         if file_size > too_large:
             print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TOO LARGE: {url}')
             return []
