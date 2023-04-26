@@ -13,13 +13,12 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     #soup = BeautifulSoup(resp.raw_response.content, 'lxml')
     links = []
 
-    if (200 <= resp.status < 300) and (resp.raw_response != None):
+    if resp.raw_response != None:
         soup = BeautifulSoup(resp.raw_response.content, 'lxml')
         text = soup.get_text()
         text = text.strip().split()
         
-        # print("THIS IS TEXT")
-        # print(text)
+        # turn words into lowercase and add them to the word_frequency dictionary to count if not a stopword
         for word in text:
             word = word.lower()
             if word not in stops:
@@ -33,7 +32,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         for link in soup.findAll('a'):
             links.append(link.get('href'))
         
-        # status code 3xx means redirect, find new URL
+        # status code 3xx means redirect, find new URL and add to links to explore
         if 300 <= resp.status < 400:
             new_link = resp.raw_response.headers.get("Location")
             print("new redirected link:")
