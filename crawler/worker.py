@@ -15,6 +15,7 @@ class Worker(Thread):
         self.logger = get_logger(f"Worker-{worker_id}", "Worker")
         self.config = config
         self.frontier = frontier
+        self.url_count = 0 # initialize total url count
         # basic check for requests in scraper
         assert {getsource(scraper).find(req) for req in {"from requests import", "import requests"}} == {-1}, "Do not use requests in scraper.py"
         assert {getsource(scraper).find(req) for req in {"from urllib.request import", "import urllib.request"}} == {-1}, "Do not use urllib.request in scraper.py"
@@ -54,11 +55,14 @@ class Worker(Thread):
             scraped_urls = scraper.scraper(tbd_url, resp, word_count, word_frequency, stops)
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
+            self.url_count += 1
+            print(f'---------------------------------------- URL COUNT: {self.url_count}')
             self.frontier.mark_url_complete(tbd_url)
 
             # time delay/politeness:
             time.sleep(self.config.time_delay)
         
+        print(f'TOTAL URL COUNT: {self.url_count}')
         # find the largest int length in the word_count dict
         longest_page_length = max(word_count.keys())
         # find the url that corresponds with the largest length
