@@ -1,13 +1,11 @@
 import re
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-from simhash import Simhash, SimhashIndex
+from difflib import SequenceMatcher
 
+prev_page_text = ''
+prev_url = ''
 
-def simhash_info(text, n):
-    text = text.lower()
-    text = re.sub(r'[^\w]+', '', text)
-    return [text[i:i + n] for i in range(max(len(text) - n + 1, 1))]
 
 def scraper(url, resp, word_count, word_frequency, stops):
     links = extract_next_links(url, resp, word_count, word_frequency, stops)
@@ -24,9 +22,36 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         # get the text on the webpage
         text = soup.get_text()
         # get list of text
-        text = text.strip().split()
+        text_list = text.strip().split()
         # count total (non-stop) words
         count = 0
+        
+        # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        global prev_page_text
+        global prev_url
+        # if this isn't the first page being checked
+        if len(prev_page_text) > 0:
+            # check if webpage content is too similar to that of previous webpage
+            sm = SequenceMatcher(a=text, b=prev_page_text)
+            similarityAB = sm.ratio()
+        
+            threshold = 0.5
+            # if the pages are more than 90% similar
+            if similarityAB >= threshold:
+                # TODO: something else here????? or does just leaving the function work?
+                print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DUPLICATE DETECTED!!!!!')
+                print()
+                print(f'prev: {prev_url}')
+                print(f'current: {url}')
+                print()
+                return []
+            
+        # this is the new prev_page_text
+        prev_page_text = text
+        # this is the new prev_url
+        prev_url = url
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         # detect and avoid large files
         '''
@@ -42,14 +67,14 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
             return
         '''
         
-        for word in text:
+        for word in text_list:
             if word not in stops:
                 word_frequency[word] += 1
                 # count word for word_count dict/finding longest page
                 count += 1
                 
         print()
-        print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text)}')
+        print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text_list)}')
         print()
 
         # add page stats to word_count dict
@@ -85,23 +110,6 @@ def is_valid(url):
         if len(valid_domains) >= 2:
             if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
                 return False
-
-
-        # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-        # check if webpage content is too similar
-         # TODO: decide n-bit size
-        n = 0
-        simHashA = # Simhash(simhash_info(?, n))) # prev page?
-        simHashB = # Simhash(simhash_info(?, n)))  # this page text content
-        similarityAB = SimhashIndex([simHashA, simHashB], k=n) # algo here (he hasn't published the slides yet lol)
-
-        # TODO: decide threshold
-        threshold = 1
-        if similarityAB >= threshold:
-            return False
-            
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         # checks for invalid file types in the url
         return not re.match(
