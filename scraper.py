@@ -33,8 +33,6 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         for link in soup.findAll('a'):
             links.append(link.get('href'))
         
-        print("below is an attempt to access location header")
-        print(resp.raw_response.headers.get("Location"))
         # status code 3xx means redirect, find new URL
         if 300 <= resp.status < 400:
             new_link = resp.raw_response.headers.get("Location")
