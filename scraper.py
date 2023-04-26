@@ -70,7 +70,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         # turn words into lowercase and add them to the word_frequency dictionary to count if not a stopword
         for word in text_list:
             word = word.lower()
-            alphabetical_regex = "/[a-zA-Z]+/g"
+            alphabetical_regex = re.compile("[a-zA-Z]+")
             valid_words = re.findall(alphabetical_regex, word)
             print("++++++++VALID WORDS")
             print(valid_words)
