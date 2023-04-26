@@ -68,8 +68,6 @@ class Frontier(object):
             self.save[urlhash] = (url, False)
             self.save.sync()
             self.to_be_downloaded.append(url)
-            self.url_count += 1
-            print(f'---------------------------------------- URL COUNT: {self.url_count}')
     
     def mark_url_complete(self, url):
         urlhash = get_urlhash(url)
