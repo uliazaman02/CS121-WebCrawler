@@ -74,7 +74,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
             alphabetical_regex = re.compile("[a-zA-Z]+")
             valid_words = re.findall(alphabetical_regex, word)
             for word in valid_words:
-                if word not in stops:
+                if (word not in stops) and (len(word) > 1):
                     word_frequency[word] += 1
                     # count word for word_count dict/finding longest page
                     count += 1
@@ -93,8 +93,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         # status code 3xx means redirect, find new URL and add to links to explore
         if 300 <= resp.status < 400:
             new_link = resp.raw_response.headers.get("Location")
-            print("new redirected link:")
-            print(new_link)
+            print("new redirected link: " + str(new_link))
             if new_link != None:
                 links.append(new_link)
 
