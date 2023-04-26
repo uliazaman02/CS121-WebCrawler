@@ -36,7 +36,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
             sm = SequenceMatcher(a=text, b=prev_page_text)
             similarityAB = sm.ratio()
         
-            threshold = 0.9
+            threshold = 0.95
             # if the pages are more than 90% similar
             if similarityAB >= threshold:
                 # TODO: something else here????? or does just leaving the function work?
