@@ -74,6 +74,7 @@ class Worker(Thread):
         # print(sort_by_frequency)
         most_common_words = [entry[0] for entry in sort_by_frequency[:51]]
         print("    MOST COMMON WORDS:")
-        print(most_common_words)
+        for word in most_common_words:
+            print("        " + word)
         print("    SUBDOMAINS:")
         print("======================== END OF CRAWL REPORT ========================")
