@@ -71,7 +71,6 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         for word in text_list:
             word = word.lower()
             if word not in stops:
-                print(word)
                 word_frequency[word] += 1
                 # count word for word_count dict/finding longest page
                 count += 1
