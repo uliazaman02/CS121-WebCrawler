@@ -70,13 +70,11 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         # turn words into lowercase and add them to the word_frequency dictionary to count if not a stopword
         for word in text_list:
             word = word.lower()
+            # only consider words that are alphabetical and is not a stopword
             alphabetical_regex = re.compile("[a-zA-Z]+")
             valid_words = re.findall(alphabetical_regex, word)
-            # print("++++++++VALID WORDS")
-            # print(valid_words)
             for word in valid_words:
                 if word not in stops:
-                    print("add " + word + " to freq dict")
                     word_frequency[word] += 1
                     # count word for word_count dict/finding longest page
                     count += 1
