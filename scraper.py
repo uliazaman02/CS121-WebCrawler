@@ -19,13 +19,11 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     # checks if page has 200 status code (OK) and there is content, so we can crawl the page
     if resp.status == 200 and resp.raw_response != None:
 
-        # detect and avoid large files
+        # detect and avoid large files ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # get raw response from webpage
         raw_response = resp.raw_response
-        # get header from webpage
-        header = resp.raw_response.headers
         # get the total file size
-        file_size = len(raw_response.content)  + len(header)
+        file_size = len(raw_response.content)
         print
         print(f'url: {url}')
         print(f'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~file size: {file_size}')
@@ -43,6 +41,8 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         text_list = text.strip().split()
         # count total (non-stop) words
         count = 0
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
         # TRAP DETECTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
