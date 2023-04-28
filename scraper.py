@@ -7,30 +7,10 @@ prev_page_text = ''
 prev_url = ''
 
 
-def scraper(url, resp, word_count, word_frequency, stops, unique_pages):
+def scraper(url, resp, word_count, word_frequency, stops):
     links = extract_next_links(url, resp, word_count, word_frequency, stops)
-    #new = count_unique_pages(links, unique_pages)
-    #old = len(unique_pages)
-    #nique_pages += new
-    #print("////unique_pages count: ", len(new)+old)
     return [link for link in links if is_valid(link)]
 
-
-'''def count_unique_pages(links, unique_pages):
-    if len(links) != 0:
-        for i in links:
-            if i == None:
-                break
-            if is_valid(i):
-                parsed = urlparse(i)
-                page = parsed.fragment
-                if page == '': # no fragment
-                    unique_pages.append(i)
-                else:
-                    l = i.split("#")
-                    if l[0] not in unique_pages:
-                        unique_pages.append(l[0])
-    return unique_pages'''
 
 
 def extract_next_links(url, resp, word_count, word_frequency, stops):
@@ -144,9 +124,28 @@ def is_valid(url):
             if valid_domains[1] not in set(["ics.uci.edu", "cs.uci.edu", "informatics.uci.edu", "stat.uci.edu"]):
                 return False
         
+        # avoids crawling pdfs, ppsx, jpeg, jpg, zip and png files
+        if "pdf" in url:
+            return False
+
+        if "ppsx" in url:
+            return False
+
+        if "jpeg" in url:
+            return False
+        
+        if "jpg" in url:
+            return False
+
+        if "zip" in url:
+            return False
+
+        if "png" in url:
+            return False
+        
         # checks for invalid file types in the url
         return not re.match(
-            r".*\.(css|js|bmp|gif|jpe?g|jpeg|jpg|ico"
+            r".*\.(css|js|bmp|gif|jpe?g|jpeg|jpg|odc|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
             + r"|ps|eps|tex|ppt|pptx|ppsx|ps|doc|docx|xls|xlsx|names"
