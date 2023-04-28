@@ -81,25 +81,31 @@ class Worker(Thread):
 
             # time delay/politeness:
             time.sleep(self.config.time_delay)
-            
-        print()
-        print("=========================== CRAWL REPORT ===========================")
-        print(f'NUMBER OF UNIQUE PAGES: {len(unique_pages)}')
+        
+        # generate report
+        f = open('report.txt', 'w')
+        f.write("=========================== CRAWL REPORT ===========================\n")
+        f.write(f'NUMBER OF UNIQUE PAGES: {len(unique_pages)}\n')
+        f.write('\n')
         # find the largest int length in the word_count dict
         longest_page_length = max(word_count.keys())
         # find the url that corresponds with the largest length
         longest_page = word_count[longest_page_length]
-        # print out results
-        print(f'LONGEST PAGE: {longest_page}')
-        print(f'LONGEST PAGE LENGTH: {longest_page_length}')
-        
-        sort_by_frequency = sorted(word_frequency.items(), key=lambda x: x[1], reverse=True)
-        print("MOST COMMON WORDS:")
-        for word, freq in sort_by_frequency[:50]:
-            print(word + ' -> ' + str(freq))
-        
-        print("ICS SUBDOMAINS:")
-        for k, v in sorted(ics_subdomains.items()):
-            print(k + ', ' + str(v))
+        # put in report
+        f.write(f'LONGEST PAGE: {longest_page}\n')
+        f.write(f'LONGEST PAGE LENGTH: {longest_page_length}\n')
+        f.write('\n')
 
-        print("======================== END OF CRAWL REPORT ========================")
+        sort_by_frequency = sorted(word_frequency.items(), key=lambda x: x[1], reverse=True)
+        f.write("MOST COMMON WORDS:\n")
+        for word, freq in sort_by_frequency[:50]:
+            f.write(word + ' -> ' + str(freq) + '\n')
+        f.write('\n')
+
+        f.write("ICS SUBDOMAINS:\n")
+        # sort ics subdomains alphabetically
+        for k, v in sorted(ics_subdomains.items()):
+            f.write(k + ', ' + str(v) + '\n')
+
+        f.write("======================== END OF CRAWL REPORT ========================")
+        f.close()
