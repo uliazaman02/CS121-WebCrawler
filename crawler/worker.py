@@ -8,6 +8,7 @@ import scraper
 import time
 import nltk
 from nltk.corpus import stopwords
+from urllib.parse import urlparse
 
 
 class Worker(Thread):
@@ -24,6 +25,7 @@ class Worker(Thread):
     def run(self):
         word_count = {}
         word_frequency = defaultdict(int)
+        unique_pages = []
         
         # nltk has a set of stopwords that can be imported
         nltk.download('stopwords')
@@ -52,17 +54,20 @@ class Worker(Thread):
             self.logger.info(
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")
-            scraped_urls = scraper.scraper(tbd_url, resp, word_count, word_frequency, stops)
+            scraped_urls = scraper.scraper(tbd_url, resp, word_count, word_frequency, stops, unique_pages)
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
-            self.url_count += 1
-            print(f'---------------------------------------- URL COUNT: {self.url_count}')
+            #self.url_count += 1
+            #print(f'---------------------------------------- URL COUNT: {self.url_count}')
+            if tbd_url not in unique_pages: #check if link has been seen already
+                unique_pages.append(tbd_url)
+            print(f'unique pages so far: {len(unique_pages)}')
             self.frontier.mark_url_complete(tbd_url)
 
             # time delay/politeness:
             time.sleep(self.config.time_delay)
         
-        print(f'TOTAL URL COUNT: {self.url_count}')
+        #print(f'TOTAL URL COUNT: {self.url_count}')
         # find the largest int length in the word_count dict
         longest_page_length = max(word_count.keys())
         # find the url that corresponds with the largest length
@@ -70,7 +75,7 @@ class Worker(Thread):
         # print out results
         print(f'Longest Page: {longest_page}')
         print(f'Longest Page Length: {longest_page_length}')
-        
+        print(f'Num unique pages: {len(unique_pages)}')
         sort_by_frequency = sorted(word_frequency.items(), key=lambda x: x[1], reverse=True)
         # print(sort_by_frequency)
         most_common_words = [entry[0] for entry in sort_by_frequency[:51]]

@@ -7,9 +7,30 @@ prev_page_text = ''
 prev_url = ''
 
 
-def scraper(url, resp, word_count, word_frequency, stops):
+def scraper(url, resp, word_count, word_frequency, stops, unique_pages):
     links = extract_next_links(url, resp, word_count, word_frequency, stops)
+    #new = count_unique_pages(links, unique_pages)
+    #old = len(unique_pages)
+    #nique_pages += new
+    #print("////unique_pages count: ", len(new)+old)
     return [link for link in links if is_valid(link)]
+
+
+'''def count_unique_pages(links, unique_pages):
+    if len(links) != 0:
+        for i in links:
+            if i == None:
+                break
+            if is_valid(i):
+                parsed = urlparse(i)
+                page = parsed.fragment
+                if page == '': # no fragment
+                    unique_pages.append(i)
+                else:
+                    l = i.split("#")
+                    if l[0] not in unique_pages:
+                        unique_pages.append(l[0])
+    return unique_pages'''
 
 
 def extract_next_links(url, resp, word_count, word_frequency, stops):
@@ -87,7 +108,14 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
 
         # uses beatiful soup to extract the urls and put them in a list
         for link in soup.findAll('a'):
-            links.append(link.get('href'))
+            link = link.get('href')
+            if link != None:
+                parsed = urlparse(link)
+                # get the fragment part
+                frag = parsed.fragment
+                if frag != '': # there is a fragment
+                    link = link.split("#")[0] # remove fragment
+                links.append(link) #put link in list
 
     # Implementation required.
     # url: the URL that was used to get the page
