@@ -26,7 +26,7 @@ class Worker(Thread):
         word_count = {}
         word_frequency = defaultdict(int)
         unique_pages = []
-        
+        ics_subdomains = {}
         # nltk has a set of stopwords that can be imported
         nltk.download('stopwords')
         # stops is a set containing english stop words
@@ -59,8 +59,23 @@ class Worker(Thread):
                 self.frontier.add_url(scraped_url)
             #self.url_count += 1
             #print(f'---------------------------------------- URL COUNT: {self.url_count}')
-            if tbd_url not in unique_pages: #check if link has been seen already
+            if tbd_url not in unique_pages: # check if link has been seen already
                 unique_pages.append(tbd_url)
+                parsed = urlparse(tbd_url)
+                if (parsed.netloc != "www.cs.uci.edu"):
+                    if (parsed.netloc != "www.ics.uci.edu"): # isn't just www.ics.uci.edu
+                        split_netloc = parsed.netloc.split('.', 1) # just get the domain part
+                        if len(parsed.netloc.split('.', 1)) >= 2:
+                            if split_netloc[1] in "ics.uci.edu": # check if the subdomain belongs to the ics.uci.edu domain
+                                netloc = parsed.netlock.lower()
+                                if parsed.netlock.lower() == " codeexchange.ics.uci.edu":
+                                    netloc = netloc[1:]
+                                subdomain = parsed.scheme + "://" + netloc # include https/http when adding to dict
+                                if subdomain in ics_subdomains: # if it's already in dictionary, then increment count
+                                    ics_subdomains[subdomain] += 1
+                                else:
+                                    ics_subdomains[subdomain] = 1  # first entry
+
             print(f'unique pages so far: {len(unique_pages)}')
             self.frontier.mark_url_complete(tbd_url)
 
@@ -69,19 +84,22 @@ class Worker(Thread):
             
         print()
         print("=========================== CRAWL REPORT ===========================")
-        print("    UNIQUE PAGES:")
+        print(f'NUMBER OF UNIQUE PAGES: {len(unique_pages)}')
         # find the largest int length in the word_count dict
         longest_page_length = max(word_count.keys())
         # find the url that corresponds with the largest length
         longest_page = word_count[longest_page_length]
         # print out results
-        print(f'    LONGEST PAGE: {longest_page}')
-        print(f'    LONGEST PAGE LENGTH: {longest_page_length}')
+        print(f'LONGEST PAGE: {longest_page}')
+        print(f'LONGEST PAGE LENGTH: {longest_page_length}')
         
         sort_by_frequency = sorted(word_frequency.items(), key=lambda x: x[1], reverse=True)
-        most_common_words = [entry[0] for entry in sort_by_frequency[:51]]
-        print("    MOST COMMON WORDS:")
-        for word in most_common_words:
-            print("        " + word)
-        print("    SUBDOMAINS:")
+        print("MOST COMMON WORDS:")
+        for word, freq in sort_by_frequency[:50]:
+            print(word + ' -> ' + str(freq))
+        
+        print("ICS SUBDOMAINS:")
+        for k, v in sorted(ics_subdomains.items()):
+            print(k + ', ' + str(v))
+
         print("======================== END OF CRAWL REPORT ========================")
