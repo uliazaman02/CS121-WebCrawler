@@ -23,6 +23,8 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         # detect and avoid large files ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # get raw response from webpage
         raw_response = resp.raw_response
+        content_type = resp.raw_response.headers.get("Content-Type")
+        print("content type: " + str(content_type))
         # get the total file size
         file_size = len(raw_response.content)
         print
