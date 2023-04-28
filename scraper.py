@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from difflib import SequenceMatcher
 
+from urllib.parse import urljoin
+
 prev_page_text = ''
 prev_url = ''
 
@@ -26,6 +28,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     if resp.status == 200 and resp.raw_response != None and ("text" in content_type or "utf-8" in content_type):
 
         # detect and avoid large files ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
         # get raw response from webpage
         raw_response = resp.raw_response
         # get the total file size
