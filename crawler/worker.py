@@ -68,7 +68,7 @@ class Worker(Thread):
                         if len(parsed.netloc.split('.', 1)) >= 2:
                             if split_netloc[1] in "ics.uci.edu": # check if the subdomain belongs to the ics.uci.edu domain
                                 netloc = parsed.netloc.lower()
-                                if parsed.netlock.lower() == " codeexchange.ics.uci.edu":
+                                if parsed.netloc.lower() == " codeexchange.ics.uci.edu":
                                     netloc = netloc[1:]
                                 subdomain = parsed.scheme + "://" + netloc # include https/http when adding to dict
                                 if subdomain in ics_subdomains: # if it's already in dictionary, then increment count
