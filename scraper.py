@@ -102,7 +102,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
                 if frag != '': # there is a fragment
                     link = link.split("#")[0] # remove fragment
                 links.append(link) #put link in list
-            links.append(link.get('href'))
+            #links.append(link.get('href'))
         
         # status code 3xx means redirect, find new URL and add to links to explore
         if 300 <= resp.status < 400:
