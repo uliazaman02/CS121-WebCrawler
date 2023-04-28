@@ -80,11 +80,17 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
         prev_url = url
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
+        # turn words into lowercase and add them to the word_frequency dictionary to count if not a stopword
         for word in text_list:
-            if word not in stops:
-                word_frequency[word] += 1
-                # count word for word_count dict/finding longest page
-                count += 1
+            word = word.lower()
+            # only consider words that are alphabetical and is not a stopword
+            alphabetical_regex = re.compile("[a-zA-Z]+")
+            valid_words = re.findall(alphabetical_regex, word)
+            for word in valid_words:
+                if (word not in stops) and (len(word) > 1):
+                    word_frequency[word] += 1
+                    # count word for word_count dict/finding longest page
+                    count += 1
                 
         print()
         print(f'{url}~~~~~~~~~~~~~~~~~~~~~~ word count: {len(text_list)}')
@@ -103,6 +109,14 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
                 if frag != '': # there is a fragment
                     link = link.split("#")[0] # remove fragment
                 links.append(link) #put link in list
+            #links.append(link.get('href'))
+        
+        # status code 3xx means redirect, find new URL and add to links to explore
+        if 300 <= resp.status < 400:
+            new_link = resp.raw_response.headers.get("Location")
+            print("new redirected link: " + str(new_link))
+            if new_link != None:
+                links.append(new_link)
 
     # Implementation required.
     # url: the URL that was used to get the page
