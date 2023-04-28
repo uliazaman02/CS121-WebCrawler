@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from difflib import SequenceMatcher
 
+from urllib.parse import urljoin
+
 prev_page_text = ''
 prev_url = ''
 
@@ -17,10 +19,15 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     print(f'---------URL: {url}---------')
     links = []
 
+    # convert relative URL into absolute URL
+    source_url = resp.url
+    url = urljoin(source_url, url)
+
     # checks if page has 200 status code (OK) and there is content, so we can crawl the page
     if resp.status == 200 and resp.raw_response != None:
 
         # detect and avoid large files ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
         # get raw response from webpage
         raw_response = resp.raw_response
         # get the total file size
