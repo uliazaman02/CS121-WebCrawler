@@ -14,7 +14,6 @@ def scraper(url, resp, word_count, word_frequency, stops):
     return [link for link in links if is_valid(link)]
 
 
-
 def extract_next_links(url, resp, word_count, word_frequency, stops):
     print(f'---------URL: {url}---------')
     links = []
@@ -27,7 +26,6 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     if resp.status == 200 and resp.raw_response != None:
 
         # detect and avoid large files ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
         # get raw response from webpage
         raw_response = resp.raw_response
         # get the total file size
@@ -109,14 +107,6 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
                 if frag != '': # there is a fragment
                     link = link.split("#")[0] # remove fragment
                 links.append(link) #put link in list
-            #links.append(link.get('href'))
-        
-        # status code 3xx means redirect, find new URL and add to links to explore
-        if 300 <= resp.status < 400:
-            new_link = resp.raw_response.headers.get("Location")
-            print("new redirected link: " + str(new_link))
-            if new_link != None:
-                links.append(new_link)
 
     # Implementation required.
     # url: the URL that was used to get the page
