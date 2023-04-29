@@ -18,6 +18,10 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     print(f'---------URL: {url}---------')
     links = []
 
+    # convert relative URL into absolute URL
+    source_url = resp.url
+    url = urljoin(source_url, url)
+
     # checks if page has 200 status code (OK), there is content, and has UTF-8 encoding, so we can crawl the page
     try:
         content_type = resp.raw_response.headers.get("Content-Type").lower()
@@ -27,6 +31,7 @@ def extract_next_links(url, resp, word_count, word_frequency, stops):
     if resp.status == 200 and resp.raw_response != None and ("text" in content_type or "utf-8" in content_type):
 
         # detect and avoid large files ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        
         # get raw response from webpage
         raw_response = resp.raw_response
         # get the total file size
