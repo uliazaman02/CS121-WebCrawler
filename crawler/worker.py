@@ -84,6 +84,7 @@ class Worker(Thread):
         
         # generate report
         f = open('report.txt', 'w')
+        f.write("Team: Amanda Hausmann, Michelle Lin, Serena Rupani, Ulia Zaman\n")
         f.write("=========================== CRAWL REPORT ===========================\n")
         f.write(f'NUMBER OF UNIQUE PAGES: {len(unique_pages)}\n')
         f.write('\n')
